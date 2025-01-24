@@ -4,69 +4,95 @@
     "title": "Test 1",
     "author": "WR8",
     "year": 2024,
-    "genre": "Фэнтези"
+    "genre": "Фэнтези",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "2b3c4d5e-6789-0abc-def1-234567890abc",
     "title": "Test 2",
     "author": "IN",
     "year": 2023,
-    "genre": "Драма"
+    "genre": "Драма",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "3c4d5e6f-7890-1bcd-ef12-34567890abcd",
     "title": "Test 3",
     "author": "Nikita",
     "year": 2022,
-    "genre": "Мистика"
+    "genre": "Мистика",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "ced7706e-e9c4-43a6-883e-dcf5f187a4ae",
     "title": "Test 4",
     "author": "Автор 4",
     "year": 2004,
-    "genre": "Жанр"
+    "genre": "Жанр",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "2ca5638e-7e0a-40b8-87a4-6a296306cdc3",
     "title": "Test 5",
     "author": "Автор 5",
     "year": 2005,
-    "genre": "Жанр"
+    "genre": "Жанр",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "a785ef9d-208e-4ab9-ad3b-441f2dfcac02",
     "title": "Test 6",
     "author": "Автор 6",
     "year": 2006,
-    "genre": "Жанр"
+    "genre": "Жанр",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "80ca226e-0f80-4c29-8af8-063d17d7fecb",
     "title": "Test 7",
     "author": "Автор 7",
     "year": 2007,
-    "genre": "Жанр"
+    "genre": "Жанр",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "0a06929f-bad3-4745-84fe-1819618b701d",
     "title": "Test 8",
     "author": "Автор 8",
     "year": 2008,
-    "genre": "Жанр"
+    "genre": "Жанр",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "eb65e965-b1fe-401f-b2c2-e17649b1927a",
     "title": "Test 14",
     "author": "Автор 14",
     "year": 2014,
-    "genre": "Жанр"
+    "genre": "Жанр",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   },
   {
     "id": "824a11d9-668c-483c-9244-081f16d4e9e3",
     "title": "Test 15",
     "author": "Автор 15",
     "year": 2015,
-    "genre": "Жанр"
+    "genre": "Жанр",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+  },
+  {
+    "id": "efc94120-e397-482f-be8c-0f3e0904e328",
+    "title": "1",
+    "author": "2",
+    "year": 2321,
+    "genre": "123",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+  },
+  {
+    "id": "b1e09bee-87ad-4fec-9201-481e806b7ed5",
+    "title": "1",
+    "author": "1",
+    "year": 1,
+    "genre": "1",
+    "content": "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
   }
 ]

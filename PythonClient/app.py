@@ -1,6 +1,9 @@
 import sys
 import requests
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHBoxLayout, QDialog, QLabel, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QPushButton, QTableWidget,
+    QTableWidgetItem, QHBoxLayout, QDialog, QLabel, QLineEdit, QMessageBox, QTextEdit
+)
 from PyQt5.QtCore import QTimer
 
 class BookDialog(QDialog):
@@ -16,6 +19,8 @@ class BookDialog(QDialog):
         self.year_input = QLineEdit()
         self.genre_label = QLabel("Жанр:")
         self.genre_input = QLineEdit()
+        self.content_label = QLabel("Содержание:")
+        self.content_input = QTextEdit()
         self.layout.addWidget(self.title_label)
         self.layout.addWidget(self.title_input)
         self.layout.addWidget(self.author_label)
@@ -24,6 +29,8 @@ class BookDialog(QDialog):
         self.layout.addWidget(self.year_input)
         self.layout.addWidget(self.genre_label)
         self.layout.addWidget(self.genre_input)
+        self.layout.addWidget(self.content_label)
+        self.layout.addWidget(self.content_input)
         self.button_layout = QHBoxLayout()
         self.save_button = QPushButton("Сохранить")
         self.cancel_button = QPushButton("Отмена")
@@ -38,16 +45,17 @@ class BookDialog(QDialog):
             self.author_input.setText(book['author'])
             self.year_input.setText(str(book['year']))
             self.genre_input.setText(book['genre'])
+            self.content_input.setText(book.get('content', ''))
 
 class App(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Управление библиотекой")
-        self.resize(800, 600)
+        self.resize(900, 600)
         self.layout = QVBoxLayout()
         self.table = QTableWidget()
-        self.table.setColumnCount(5)
-        self.table.setHorizontalHeaderLabels(["ID", "Название", "Автор", "Год", "Жанр"])
+        self.table.setColumnCount(6)
+        self.table.setHorizontalHeaderLabels(["ID", "Название", "Автор", "Год", "Жанр", "Содержание"])
         self.layout.addWidget(self.table)
         self.button_layout = QHBoxLayout()
         self.add_button = QPushButton("Добавить книгу")
@@ -80,7 +88,9 @@ class App(QWidget):
                     self.table.setItem(row_position, 2, QTableWidgetItem(book['author']))
                     self.table.setItem(row_position, 3, QTableWidgetItem(str(book['year'])))
                     self.table.setItem(row_position, 4, QTableWidgetItem(book['genre']))
-        except:
+                    self.table.setItem(row_position, 5, QTableWidgetItem(book['content']))
+        except Exception as e:
+            print(f"Error fetching books: {e}")
             QMessageBox.critical(self, "Ошибка", "Не удалось подключиться к серверу.")
 
     def add_book(self):
@@ -90,19 +100,29 @@ class App(QWidget):
             author = dialog.author_input.text()
             year = dialog.year_input.text()
             genre = dialog.genre_input.text()
+            content = dialog.content_input.toPlainText()
             if not title or not author:
                 QMessageBox.warning(self, "Предупреждение", "Название и автор обязательны.")
                 return
             try:
-                year_int = int(year)
+                year_int = int(year) if year else None
             except:
                 year_int = None
-            data = {"title": title, "author": author, "year": year_int, "genre": genre}
+            data = {
+                "title": title,
+                "author": author,
+                "year": year_int,
+                "genre": genre,
+                "content": content
+            }
             try:
-                response = requests.post("http://localhost:3000/books", json=data)
+                response = requests.post("http://locaclhost:3000/books", json=data)
                 if response.status_code == 201:
                     self.fetch_books()
-            except:
+                else:
+                    QMessageBox.critical(self, "Ошибка", f"Не удалось добавить книгу. Статус: {response.status_code}")
+            except Exception as e:
+                print(f"Error adding book: {e}")
                 QMessageBox.critical(self, "Ошибка", "Не удалось добавить книгу.")
 
     def update_book(self):
@@ -111,30 +131,45 @@ class App(QWidget):
             QMessageBox.warning(self, "Предупреждение", "Выберите книгу для обновления.")
             return
         book_id = self.table.item(selected, 0).text()
-        title = self.table.item(selected, 1).text()
-        author = self.table.item(selected, 2).text()
-        year = self.table.item(selected, 3).text()
-        genre = self.table.item(selected, 4).text()
-        book = {"id": book_id, "title": title, "author": author, "year": int(year) if year.isdigit() else None, "genre": genre}
+        try:
+            response = requests.get(f"http://locaclhost:3000/books/{book_id}")
+            if response.status_code != 200:
+                QMessageBox.critical(self, "Ошибка", f"Не удалось получить данные книги. Статус: {response.status_code}")
+                return
+            book = response.json()
+        except Exception as e:
+            print(f"Error fetching book details: {e}")
+            QMessageBox.critical(self, "Ошибка", "Не удалось получить данные книги.")
+            return
         dialog = BookDialog(self, book)
         if dialog.exec_() == QDialog.Accepted:
             new_title = dialog.title_input.text()
             new_author = dialog.author_input.text()
             new_year = dialog.year_input.text()
             new_genre = dialog.genre_input.text()
+            new_content = dialog.content_input.toPlainText()
             if not new_title or not new_author:
                 QMessageBox.warning(self, "Предупреждение", "Название и автор обязательны.")
                 return
             try:
-                new_year_int = int(new_year)
+                new_year_int = int(new_year) if new_year else None
             except:
                 new_year_int = None
-            data = {"title": new_title, "author": new_author, "year": new_year_int, "genre": new_genre}
+            data = {
+                "title": new_title,
+                "author": new_author,
+                "year": new_year_int,
+                "genre": new_genre,
+                "content": new_content
+            }
             try:
-                response = requests.put(f"http://localhost:3000/books/{book_id}", json=data)
+                response = requests.put(f"http://locaclhost:3000/books/{book_id}", json=data)
                 if response.status_code == 200:
                     self.fetch_books()
-            except:
+                else:
+                    QMessageBox.critical(self, "Ошибка", f"Не удалось обновить книгу. Статус: {response.status_code}")
+            except Exception as e:
+                print(f"Error updating book: {e}")
                 QMessageBox.critical(self, "Ошибка", "Не удалось обновить книгу.")
 
     def delete_book(self):
@@ -143,17 +178,39 @@ class App(QWidget):
             QMessageBox.warning(self, "Предупреждение", "Выберите книгу для удаления.")
             return
         book_id = self.table.item(selected, 0).text()
-        reply = QMessageBox.question(self, "Подтверждение", "Вы действительно хотите удалить эту книгу?", QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        reply = QMessageBox.question(
+            self,
+            "Подтверждение",
+            "Вы действительно хотите удалить эту книгу?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
         if reply == QMessageBox.Yes:
             try:
-                response = requests.delete(f"http://localhost:3000/books/{book_id}")
+                response = requests.delete(f"http://locaclhost:3000/books/{book_id}")
                 if response.status_code == 204:
                     self.fetch_books()
-            except:
+                else:
+                    QMessageBox.critical(self, "Ошибка", f"Не удалось удалить книгу. Статус: {response.status_code}")
+            except Exception as e:
+                print(f"Error deleting book: {e}")
                 QMessageBox.critical(self, "Ошибка", "Не удалось удалить книгу.")
+
+class ContentDialog(QDialog):
+    def __init__(self, parent=None, content=""):
+        super().__init__(parent)
+        self.setWindowTitle("Содержание книги")
+        self.layout = QVBoxLayout()
+        self.content_label = QLabel("Содержание:")
+        self.content_text = QTextEdit()
+        self.content_text.setReadOnly(True)
+        self.content_text.setText(content)
+        self.layout.addWidget(self.content_label)
+        self.layout.addWidget(self.content_text)
+        self.setLayout(self.layout)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = App()
     window.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_()
